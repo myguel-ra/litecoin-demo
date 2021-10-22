@@ -1,6 +1,8 @@
 pipeline {
     agent any
-
+    parameters{
+        choice(name: 'VERSION', choices: ['0.18.1'])
+    }
     stages {
         stage('Build') {
             steps {
@@ -9,7 +11,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                echo 'Deploying version ${params.VERSION}'
             }
         }
     }
