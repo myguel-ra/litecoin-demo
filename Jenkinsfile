@@ -1,8 +1,6 @@
 pipeline {
-    agent any
-    parameters{
-        choice(name: 'VERSION', choices: ['0.18.1'])
-    }
+    agent { dockerfile true }
+    parameters{ choice(name: 'VERSION', choices: ['0.18.1']) }
     stages {
         stage('Build') {
             steps {
@@ -11,7 +9,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying version ${params.VERSION}'
+                echo "Deploying version ${params.VERSION}"
             }
         }
     }
