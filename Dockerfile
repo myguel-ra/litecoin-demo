@@ -21,6 +21,7 @@ RUN set -eux; cd /tmp; \
     adduser -system litecoin 
 
 EXPOSE 9332 9333
+VOLUME ["/home/litecoin/.litecoin"]
 
 USER litecoin
 WORKDIR /home/litecoin
