@@ -1,15 +1,35 @@
 pipeline {
-    agent { dockerfile true }
-    parameters{ choice(name: 'VERSION', choices: ['0.18.1']) }
+    agent { label 'docker' }
     stages {
-        stage('Build') {
+        stage('Checkout') { 
             steps {
-                echo 'Building..'
+                checkout(
+                    [$class: 'GitSCM',
+                    branches: [[name: '*/dev']],
+                    extensions: [],
+                    userRemoteConfigs: [[url: 'https://github.com/myguel-ra/litecoin-demo.git']]
+                    ]
+                )
             }
         }
-        stage('Deploy') {
+        stage('Build') { 
             steps {
-                echo "Deploying version ${params.VERSION}"
+                withCredentials([usernamePassword(credentialsId: 'myguel-dockerhub', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
+                    sh 'echo $TOKEN | docker login -u $USER --password-stdin'
+                    sh "docker build -t myguel/litecoin -t myguel/litecoin:${env.BUILD_ID} --build-arg VERSION=${env.VERSION} ."
+                    sh "docker push myguel/litecoin --all-tags"
+                    sh "docker rmi myguel/litecoin:${env.BUILD_ID}" 
+                }
+            }
+            post { 
+                always { 
+                    sh 'docker logout'
+                }
+            }
+        }
+        stage('Deploy') { 
+            steps {
+                echo "Deploying version ${env.version}"
             }
         }
     }
