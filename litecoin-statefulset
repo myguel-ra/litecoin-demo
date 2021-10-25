@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: litecoin
+  labels:
+    app: litecoin
+spec:
+  ports:
+    - port: 9332
+      name: rpc
+  clusterIP: None
+  selector:
+    app: litecoin
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: litecoin
+spec:
+  selector:
+    matchLabels:
+      app: litecoin
+  serviceName: "litecoin"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: litecoin
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: litecoin
+          image: myguel/litecoin
+          ports:
+            - containerPort: 9332
+              name: RPC
+          volumeMounts:
+            - name: data
+              mountPath: /opt
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
