@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Deploy') { 
             steps {
-                echo "Deploying version ${env.version}"
+                echo "kubectl apply -f litecoin-pod.yaml"
             }
         }
     }
