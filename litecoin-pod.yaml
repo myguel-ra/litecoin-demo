@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: litecoin-demo
+spec:
+  containers:
+  - name: litecoin-demo
+    image: myguel/litecoin
+    env:
+    - name: VERSION
+      value: "0.18.1"
